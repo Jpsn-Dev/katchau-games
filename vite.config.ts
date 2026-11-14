@@ -15,4 +15,23 @@ export default defineConfig({
     // nitro/vite builds from this
     server: { entry: "server" },
   },
+  vite: {
+    // Pre-bundle UI libraries at startup so the dev server never re-optimizes mid-session,
+    // which loads two React copies and crashes with "reading 'useRef'" of null.
+    optimizeDeps: {
+      include: [
+        "@radix-ui/react-dialog",
+        "@radix-ui/react-checkbox",
+        "@radix-ui/react-select",
+        "@radix-ui/react-accordion",
+        "@radix-ui/react-label",
+        "@radix-ui/react-slot",
+        "class-variance-authority",
+        "clsx",
+        "tailwind-merge",
+        "lucide-react",
+        "sonner",
+      ],
+    },
+  },
 });
