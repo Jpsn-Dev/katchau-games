@@ -28,3 +28,11 @@ use the editor.
   own key and store it in Secrets.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
+
+## Project rules
+
+- The product catalog is static data in `src/lib/products.ts`; there is no backend — the store is a demo with no real sales.
+- The cart lives in browser storage via `src/lib/cart.ts` (useSyncExternalStore with an empty server snapshot) so pages render on the server without hydration mismatches.
+- Catalog filters live in URL search params (shared `validateCatalogSearch`), so filtered views are linkable; category pages reuse `CatalogView` with a fixed category.
+- Product and banner images are CDN asset pointers under `src/assets/` — never commit the raw image files.
+- Vite pre-bundles the UI libraries the app uses (vite.config.ts optimizeDeps.include); add new ones there so mid-session re-optimization cannot load a second React copy.
