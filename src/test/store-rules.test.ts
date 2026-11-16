@@ -34,3 +34,22 @@ describe("catalog rules", () => {
     expect(filterProducts(products, { q: "perifericos" }).every((p) => p.category === "Periféricos")).toBe(true);
   });
 });
+
+import { cartStore as __cs } from "@/lib/cart";
+import { getReviews } from "@/lib/reviews";
+import { products as __ps } from "@/lib/products";
+describe("rodada de melhorias", () => {
+  it("todo produto tem nota entre 4 e 5 e ao menos 3 comentários", () => {
+    for (const p of __ps) {
+      const r = getReviews(p);
+      expect(r.average).toBeGreaterThanOrEqual(4);
+      expect(r.average).toBeLessThanOrEqual(5);
+      expect(r.reviews.length).toBeGreaterThanOrEqual(3);
+    }
+  });
+  it("limpar carrinho remove todos os itens", () => {
+    __cs.add(1, 2); __cs.add(5, 1);
+    __cs.clear();
+    expect(__cs.getSnapshot()).toEqual([]);
+  });
+});

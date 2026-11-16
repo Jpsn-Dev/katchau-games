@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { cartStore, MAX_QTY } from "@/lib/cart";
 import { discountPercent, installment, MAX_INSTALLMENTS, money } from "@/lib/format";
 import { products, type Product } from "@/lib/products";
+import { getReviews } from "@/lib/reviews";
+import { Stars } from "@/components/site/Stars";
 
 export const Route = createFileRoute("/produto/$slug")({
   loader: ({ params }) => {
@@ -58,6 +60,7 @@ function ProductPage() {
   const add = useAddToCart();
   const navigate = useNavigate();
   const off = discountPercent(p.price, p.oldPrice);
+  const reviews = getReviews(p);
   const related = products
     .filter((x) => x.id !== p.id && (x.category === p.category || x.platforms.some((pl) => p.platforms.includes(pl))))
     .sort((a, b) => Number(b.category === p.category) - Number(a.category === p.category))
@@ -85,6 +88,11 @@ function ProductPage() {
           <div className="flex flex-col">
             <span className="eyebrow">{p.platforms.join(" · ")}</span>
             <h1 className="display mt-3 text-5xl md:text-6xl">{p.name}</h1>
+            <a href="#avaliacoes" className="mt-3 inline-flex w-fit items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
+              <Stars value={reviews.average} className="text-base" />
+              <span className="font-semibold text-foreground">{reviews.average.toFixed(1).replace(".", ",")}</span>
+              <span>· {reviews.count} avaliações demonstrativas</span>
+            </a>
             <p className="mt-2 text-sm text-muted-foreground">Código KT-{String(p.id).padStart(4, "0")} · {p.category}</p>
 
             <div className="mt-8 rounded-xl border border-border bg-card p-6">
@@ -153,6 +161,8 @@ function ProductPage() {
         </div>
       </div>
 
+      <ReviewsSection summary={reviews} />
+
       {related.length > 0 && (
         <section className="wrap mt-16">
           <span className="eyebrow">Você também pode gostar</span>
@@ -174,5 +184,59 @@ function Perk({ icon: Icon, text }: { icon: typeof ShieldCheck; text: string }) 
       <Icon className="size-4 shrink-0 text-primary" />
       <span className="text-foreground/90">{text}</span>
     </li>
+  );
+}
+
+function ReviewsSection({ summary }: { summary: ReturnType<typeof getReviews> }) {
+  const dist = [5, 4, 3, 2, 1].map((n) => {
+    const shown = summary.reviews.filter((r) => r.rating === n).length;
+    const base = n === 5 ? 0.62 : n === 4 ? 0.27 : n === 3 ? 0.08 : n === 2 ? 0.02 : 0.01;
+    const share = (base * 3 + shown / summary.reviews.length) / 4;
+    return { n, share };
+  });
+  return (
+    <section id="avaliacoes" className="wrap mt-16 scroll-mt-40">
+      <span className="eyebrow">Opiniões</span>
+      <h2 className="display mt-3 text-4xl">Avaliações</h2>
+      <p className="mt-2 text-sm text-muted-foreground">
+        Avaliações demonstrativas criadas para este projeto acadêmico — não são opiniões de compradores reais.
+      </p>
+      <div className="mt-8 grid gap-6 lg:grid-cols-[300px_1fr]">
+        <div className="h-fit rounded-xl border border-border bg-card p-6">
+          <p className="font-display text-6xl font-bold leading-none">{summary.average.toFixed(1).replace(".", ",")}</p>
+          <Stars value={summary.average} className="mt-3 text-xl" />
+          <p className="mt-2 text-sm text-muted-foreground">{summary.count} avaliações</p>
+          <ul className="mt-5 space-y-2">
+            {dist.map((d) => (
+              <li key={d.n} className="flex items-center gap-3 text-xs text-muted-foreground">
+                <span className="w-3 tabular-nums">{d.n}</span>
+                <span className="h-1.5 flex-1 overflow-hidden rounded-full bg-surface-raised">
+                  <span className="block h-full rounded-full bg-primary" style={{ width: `${Math.round(d.share * 100)}%` }} />
+                </span>
+                <span className="w-8 text-right tabular-nums">{Math.round(d.share * 100)}%</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <ul className="grid gap-4 md:grid-cols-2">
+          {summary.reviews.map((r) => (
+            <li key={r.author + r.title} className="rounded-xl border border-border bg-card p-5">
+              <div className="flex items-center justify-between gap-3">
+                <Stars value={r.rating} className="text-sm" />
+                <span className="text-xs text-muted-foreground">{r.date}</span>
+              </div>
+              <p className="mt-3 font-semibold">{r.title}</p>
+              <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{r.text}</p>
+              <div className="mt-4 flex items-center gap-2.5 border-t border-border pt-3">
+                <span className="grid size-8 place-items-center rounded-full bg-surface-raised font-display text-sm font-bold text-primary">
+                  {r.author.split(" ").map((w) => w[0]).join("")}
+                </span>
+                <span className="text-xs"><span className="font-semibold text-foreground">{r.author}</span> <span className="text-muted-foreground">· {r.city}</span></span>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
   );
 }

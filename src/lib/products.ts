@@ -31,6 +31,10 @@ import img_periferico_11 from "@/assets/products/periferico-11.webp.asset.json";
 import img_pokemon_scarlet from "@/assets/products/pokemon-scarlet.webp.asset.json";
 import img_super_mario_odyssey from "@/assets/products/super-mario-odyssey.webp.asset.json";
 import img_zelda_breath_of_the_wild from "@/assets/products/zelda-breath-of-the-wild.webp.asset.json";
+import img_mouse_naga from "@/assets/products/mouse-redragon-naga.webp.asset.json";
+import img_mouse_viper from "@/assets/products/mouse-redragon-viper-fly.webp.asset.json";
+import img_teclado_nephrite from "@/assets/products/teclado-redragon-nephrite-pro.webp.asset.json";
+import img_teclado_clipper from "@/assets/products/teclado-corsair-clipper.webp.asset.json";
 
 export type Category = "Consoles" | "Jogos" | "Periféricos";
 export type Platform = "PlayStation" | "Xbox" | "Nintendo";
@@ -398,6 +402,54 @@ export const products: Product[] = [
     oldPrice: 299.9,
     tag: "Áudio",
     image: img_periferico_11.url,
+    kind: "hardware",
+  },
+  {
+    id: 26,
+    slug: "mouse-gamer-redragon-naga",
+    name: "Mouse Gamer Redragon Naga RGB 32000 DPI",
+    category: "Periféricos",
+    platforms: ["PlayStation", "Xbox"],
+    price: 229.9,
+    oldPrice: 279.9,
+    tag: "Mouse",
+    image: img_mouse_naga.url,
+    kind: "hardware",
+  },
+  {
+    id: 29,
+    slug: "mouse-gamer-redragon-viper-fly",
+    name: "Mouse Gamer Redragon Viper Fly RGB 26000 DPI",
+    category: "Periféricos",
+    platforms: ["PlayStation", "Xbox"],
+    price: 189.9,
+    oldPrice: 239.9,
+    tag: "Mouse",
+    image: img_mouse_viper.url,
+    kind: "hardware",
+  },
+  {
+    id: 30,
+    slug: "teclado-magnetico-redragon-nephrite-pro",
+    name: "Teclado Magnético Redragon Nephrite Pro",
+    category: "Periféricos",
+    platforms: ["PlayStation", "Xbox"],
+    price: 549.9,
+    oldPrice: 649.9,
+    tag: "Teclado",
+    image: img_teclado_nephrite.url,
+    kind: "hardware",
+  },
+  {
+    id: 32,
+    slug: "teclado-mecanico-corsair-clipper",
+    name: "Teclado Mecânico Corsair Clipper",
+    category: "Periféricos",
+    platforms: ["PlayStation", "Xbox"],
+    price: 479.9,
+    oldPrice: 569.9,
+    tag: "Teclado",
+    image: img_teclado_clipper.url,
     kind: "hardware",
   },
   {

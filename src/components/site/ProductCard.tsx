@@ -5,7 +5,9 @@ import { toast } from "sonner";
 import { cartStore } from "@/lib/cart";
 import { discountPercent, installment, money, MAX_INSTALLMENTS } from "@/lib/format";
 import type { Product } from "@/lib/products";
+import { getReviews } from "@/lib/reviews";
 import { cn } from "@/lib/utils";
+import { Stars } from "./Stars";
 
 export function useAddToCart() {
   const navigate = useNavigate();
@@ -32,11 +34,12 @@ export function ProductImage({ product, className, size = "card" }: { product: P
         src={product.image}
         alt={product.name}
         loading="lazy"
+        decoding="async"
         className={cn(
-          "transition-transform duration-500 ease-out group-hover:scale-[1.04]",
+          "absolute inset-0 m-auto object-contain object-center transition-transform duration-500 ease-out group-hover:scale-[1.03]",
           isGame
-            ? cn("h-[84%] w-auto rounded-sm object-contain shadow-card", size === "large" && "h-[88%]")
-            : "h-full w-full object-contain p-[12%] mix-blend-multiply",
+            ? cn("h-[84%] w-[84%] drop-shadow-[0_12px_18px_rgba(0,0,0,0.45)]", size === "large" && "h-[88%] w-[88%]")
+            : "h-[78%] w-[78%] mix-blend-multiply",
         )}
       />
     </div>
@@ -77,6 +80,7 @@ export function ProductCard({ product, className }: { product: Product; classNam
         >
           {product.name}
         </Link>
+        <RatingLine product={product} />
         <div className="mt-2 flex items-end justify-between gap-3">
           <div>
             <div className="text-xs text-muted-foreground line-through">{money(product.oldPrice)}</div>
@@ -96,5 +100,16 @@ export function ProductCard({ product, className }: { product: Product; classNam
         </div>
       </div>
     </article>
+  );
+}
+
+function RatingLine({ product }: { product: Product }) {
+  const { average, count } = getReviews(product);
+  return (
+    <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+      <Stars value={average} className="text-[13px]" />
+      <span className="font-semibold text-foreground">{average.toFixed(1).replace(".", ",")}</span>
+      <span>({count})</span>
+    </div>
   );
 }

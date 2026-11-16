@@ -1,5 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { HelpCircle, Package, ShieldCheck } from "lucide-react";
+import { Check, Copy, HelpCircle, Mail, Package, ShieldCheck } from "lucide-react";
+import { toast } from "sonner";
+import { CONTACT_EMAIL } from "@/lib/contact";
 import { useState, type FormEvent } from "react";
 
 import { PageHeader } from "@/components/site/PageHeader";
@@ -55,6 +57,7 @@ function SupportPage() {
               Este formulário é demonstrativo: nenhuma mensagem ou dado é enviado ou armazenado. Para dúvidas rápidas, confira as{" "}
               <Link to="/faq" className="font-semibold text-primary hover:underline">perguntas frequentes</Link>.
             </p>
+            <EmailCard />
           </div>
           <form onSubmit={submit} className="space-y-5 rounded-xl border border-border bg-card p-6 md:p-8">
             <div className="grid gap-5 sm:grid-cols-2">
@@ -85,5 +88,41 @@ function SupportPage() {
         </div>
       </div>
     </>
+  );
+}
+
+function EmailCard() {
+  const [copied, setCopied] = useState(false);
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(CONTACT_EMAIL);
+      setCopied(true);
+      toast.success("E-mail copiado");
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      toast("Não foi possível copiar", { description: CONTACT_EMAIL });
+    }
+  };
+  return (
+    <div className="mt-8 rounded-xl border border-border bg-card p-5">
+      <div className="flex items-center gap-4">
+        <span className="grid size-11 shrink-0 place-items-center rounded-lg bg-primary/15 text-primary">
+          <Mail className="size-5" />
+        </span>
+        <div className="min-w-0 flex-1">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">E-mail do projeto</p>
+          <a href={`mailto:${CONTACT_EMAIL}`} className="block truncate font-semibold hover:text-primary">{CONTACT_EMAIL}</a>
+        </div>
+        <button
+          type="button"
+          onClick={copy}
+          aria-label="Copiar e-mail"
+          className="grid size-10 shrink-0 place-items-center rounded-md border border-border text-muted-foreground transition-colors hover:border-primary/60 hover:text-primary"
+        >
+          {copied ? <Check className="size-4" /> : <Copy className="size-4" />}
+        </button>
+      </div>
+      <p className="mt-3 text-xs text-muted-foreground">Endereço demonstrativo do projeto acadêmico — não há atendimento comercial.</p>
+    </div>
   );
 }
