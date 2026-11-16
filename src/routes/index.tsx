@@ -223,7 +223,7 @@ function GamesShelf({ games }: { games: Product[] }) {
                   src={g.image}
                   alt={g.name}
                   loading="lazy"
-                  className="aspect-[2/3] w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  className="aspect-[2/3] w-full object-contain object-center p-1.5 transition-transform duration-500 group-hover:scale-[1.03]"
                 />
               </div>
               <p className="mt-3 line-clamp-1 text-sm font-semibold group-hover:text-primary">{g.name}</p>
