@@ -3,6 +3,17 @@ import { ArrowRight, Minus, Plus, ShoppingBag, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { ProductImage } from "@/components/site/ProductCard";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { cartCount, cartStore, cartTotals, MAX_QTY, useCart } from "@/lib/cart";
 import { installment, MAX_INSTALLMENTS, money } from "@/lib/format";
@@ -31,15 +42,46 @@ function CartPage() {
   return (
     <div className="wrap py-12">
       <span className="eyebrow">Sua seleção</span>
-      <h1 className="display mt-3 text-5xl md:text-6xl">Carrinho</h1>
+      <div className="mt-3 flex flex-wrap items-end justify-between gap-4">
+        <h1 className="display text-5xl md:text-6xl">Carrinho</h1>
+        {lines.length > 0 && (
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <button type="button" className="inline-flex items-center gap-1.5 rounded-md border border-border px-3 py-2 text-sm text-muted-foreground transition-colors hover:border-destructive/60 hover:text-destructive">
+                <Trash2 className="size-4" /> Limpar carrinho
+              </button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Esvaziar o carrinho?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Todos os {count} {count === 1 ? "item será removido" : "itens serão removidos"}. Essa ação não pode ser desfeita.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                <AlertDialogAction
+                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  onClick={() => {
+                    cartStore.clear();
+                    toast("Carrinho esvaziado");
+                  }}
+                >
+                  Sim, limpar carrinho
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        )}
+      </div>
 
       {lines.length === 0 ? (
         <div className="mt-10 rounded-xl border border-dashed border-border px-6 py-24 text-center">
           <ShoppingBag className="mx-auto size-10 text-primary" />
           <p className="display mt-5 text-3xl">Seu carrinho está vazio</p>
-          <p className="mt-2 text-muted-foreground">Que tal começar pelos destaques da semana?</p>
+          <p className="mt-2 text-muted-foreground">Adicione produtos pelo catálogo — consoles, jogos e periféricos esperam por você.</p>
           <Button asChild variant="brand" size="xl" className="mt-8">
-            <Link to="/catalogo">Explorar produtos</Link>
+            <Link to="/catalogo">Voltar ao catálogo</Link>
           </Button>
         </div>
       ) : (
