@@ -25,7 +25,7 @@ Foram analisadas todas as páginas de conteúdo, o cabeçalho, o rodapé, as vit
 
 O Lovable exige que a aplicação da prévia continue em React e TanStack Start. Não é possível substituir sua base integralmente aqui por páginas HTML puras.
 
-**Alternativa sujeita à sua confirmação:** entregar um projeto independente em ZIP, realmente composto de HTML5, CSS3 externo e JavaScript Vanilla, sem React, TypeScript, JSX, Tailwind ou bibliotecas de interface. O site atual e o endereço publicado ficam intactos. A versão independente poderá ser apresentada na faculdade e hospedada em um serviço para sites estáticos; sua publicação não está incluída nesta etapa.
+**Entrega independente confirmada por você:** entregar um projeto independente em ZIP, realmente composto de HTML5, CSS3 externo e JavaScript Vanilla, sem React, TypeScript, JSX, Tailwind ou bibliotecas de interface. O site atual e o endereço publicado ficam intactos. A versão independente poderá ser apresentada na faculdade e hospedada em um serviço para sites estáticos; sua publicação não está incluída nesta etapa.
 
 ## Etapas da reconstrução independente
 
