@@ -1,15 +1,18 @@
 /*
  * KaTchau — cadastro e login DEMONSTRATIVOS.
  *
- * Não existe servidor: as contas ficam salvas somente neste navegador (localStorage)
- * e nada é enviado pela rede. Mesmo assim, a senha nunca é guardada em texto puro:
- * é transformada com PBKDF2-SHA256 (sal aleatório por conta, 150 mil iterações).
- * Isso exige um "contexto seguro": funciona em https://, em http://localhost
- * (ex.: extensão Live Server) e abrindo o arquivo direto no navegador.
+ * Dois modos, escolhidos automaticamente (veja js/api.js):
+ *  - servidor: a conta fica no banco de dados e a sessão é um cookie HttpOnly. O navegador
+ *    só guarda o nome e o e-mail de quem está conectado (para o cabeçalho abrir sem piscar);
+ *    a senha vai ao servidor por HTTPS e lá vira um hash.
+ *  - local (sem API): as contas ficam somente neste navegador (localStorage) e nada é enviado.
+ *    A senha nunca é guardada em texto puro: PBKDF2-SHA256, sal aleatório, 150 mil iterações.
+ *    Isso exige um "contexto seguro": https://, http://localhost ou o arquivo aberto direto.
  */
 
 const CHAVE_CONTAS = "katchau-users-v1";
 const CHAVE_SESSAO = "katchau-session-v1";
+const CHAVE_CACHE_SERVIDOR = "katchau-usuario-servidor-v1";
 const ITERACOES_SENHA = 150000;
 const SENHA_MINIMA = 8;
 const REGEX_EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
@@ -79,6 +82,26 @@ function validarSenha(senha) {
 
 const auth = (function () {
   const ouvintes = [];
+  let modo = null; // "servidor" | "local" | null (ainda verificando)
+  const SEM_REDE = { ok: false, erro: "Não foi possível falar com o servidor. Verifique sua conexão e tente de novo." };
+
+  function lerCacheServidor() {
+    try {
+      const u = JSON.parse(window.localStorage.getItem(CHAVE_CACHE_SERVIDOR) || "null");
+      return u && typeof u.nome === "string" && typeof u.email === "string" ? u : null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function gravarCacheServidor(usuario) {
+    try {
+      if (usuario) window.localStorage.setItem(CHAVE_CACHE_SERVIDOR, JSON.stringify({ nome: usuario.nome, email: usuario.email, criadoEm: usuario.criadoEm }));
+      else window.localStorage.removeItem(CHAVE_CACHE_SERVIDOR);
+    } catch (e) {
+      /* sem armazenamento: o servidor continua sendo a fonte da verdade */
+    }
+  }
 
   function lerContas() {
     try {
@@ -111,7 +134,7 @@ const auth = (function () {
   }
 
   window.addEventListener("storage", function (e) {
-    if (e.key === CHAVE_SESSAO || e.key === CHAVE_CONTAS) avisar();
+    if (e.key === CHAVE_SESSAO || e.key === CHAVE_CONTAS || e.key === CHAVE_CACHE_SERVIDOR) avisar();
   });
 
   const SEM_SUPORTE = {
@@ -120,13 +143,43 @@ const auth = (function () {
   };
   const SEM_ARMAZENAMENTO = { ok: false, erro: "Não foi possível salvar os dados neste navegador. Verifique se o armazenamento do site está liberado." };
 
+  function usuarioLocal() {
+    const email = lerSessao();
+    if (!email) return null;
+    const conta = lerContas().find(function (c) { return c.email === email; });
+    return conta ? { nome: conta.nome, email: conta.email, criadoEm: conta.criadoEm } : null;
+  }
+
+  // Descobre o modo e, no modo servidor, confirma com o banco quem está conectado.
+  const pronto = api.disponivel().then(async function (temServidor) {
+    modo = temServidor ? "servidor" : "local";
+    if (temServidor) {
+      const r = await api.chamar("GET", "/api/sessao");
+      if (r.ok && r.dados) gravarCacheServidor(r.dados.usuario);
+    }
+  }).catch(function () {
+    modo = modo || "local";
+  }).then(function () {
+    avisar();
+  });
+
   return {
-    /** Conta conectada ({ nome, email, criadoEm }) ou null. Nunca expõe o hash. */
+    /** Resolve quando já se sabe o modo ("servidor" ou "local") e a sessão foi conferida. */
+    pronto: pronto,
+
+    modo: function () { return modo; },
+
+    /** Chamado quando o servidor responde 401: a sessão acabou. */
+    sessaoExpirou: function () {
+      gravarCacheServidor(null);
+      avisar();
+    },
+
+    /** Conta conectada ({ nome, email, criadoEm }) ou null. Nunca expõe senha nem hash. */
     usuario: function () {
-      const email = lerSessao();
-      if (!email) return null;
-      const conta = lerContas().find(function (c) { return c.email === email; });
-      return conta ? { nome: conta.nome, email: conta.email, criadoEm: conta.criadoEm } : null;
+      if (modo === "servidor") return lerCacheServidor();
+      if (modo === "local") return usuarioLocal();
+      return lerCacheServidor() || usuarioLocal(); // ainda verificando
     },
 
     assinar: function (fn) { ouvintes.push(fn); },
@@ -137,6 +190,15 @@ const auth = (function () {
       const senha = String(dados.senha || "");
       const erro = validarNome(nome) || validarEmail(email) || validarSenha(senha);
       if (erro) return { ok: false, erro: erro };
+      await pronto;
+      if (modo === "servidor") {
+        const r = await api.chamar("POST", "/api/cadastro", { nome: nome, email: email, senha: senha });
+        if (r.rede) return SEM_REDE;
+        if (!r.ok) return { ok: false, erro: (r.dados && r.dados.erro) || "Não foi possível criar a conta agora." };
+        gravarCacheServidor(r.dados.usuario);
+        avisar();
+        return { ok: true };
+      }
       if (!criptografiaDisponivel()) return SEM_SUPORTE;
 
       const contas = lerContas();
@@ -161,6 +223,15 @@ const auth = (function () {
       const senha = String(dados.senha || "");
       if (validarEmail(email)) return { ok: false, erro: validarEmail(email) };
       if (!senha) return { ok: false, erro: "Informe sua senha." };
+      await pronto;
+      if (modo === "servidor") {
+        const r = await api.chamar("POST", "/api/login", { email: email, senha: senha });
+        if (r.rede) return SEM_REDE;
+        if (!r.ok) return { ok: false, erro: (r.dados && r.dados.erro) || "Não foi possível entrar agora." };
+        gravarCacheServidor(r.dados.usuario);
+        avisar();
+        return { ok: true };
+      }
       if (!criptografiaDisponivel()) return SEM_SUPORTE;
 
       const conta = lerContas().find(function (c) { return c.email === email; });
@@ -187,7 +258,10 @@ const auth = (function () {
       return { ok: true };
     },
 
-    sair: function () {
+    sair: async function () {
+      await pronto;
+      if (modo === "servidor") await api.chamar("POST", "/api/logout", {});
+      gravarCacheServidor(null);
       try {
         window.localStorage.removeItem(CHAVE_SESSAO);
       } catch (e) {

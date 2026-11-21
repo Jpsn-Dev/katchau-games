@@ -7,7 +7,7 @@
  * Imagens
  * As imagens originais ficam hospedadas no site publicado da KaTchau.
  * Para usar cópias locais (funciona offline), rode uma vez:
- *     node scripts/baixar-imagens.js
+ *     node scripts/baixar-imagens.cjs
  * O script baixa tudo para assets/images/ e liga USAR_IMAGENS_LOCAIS.
  * ------------------------------------------------------------------ */
 const USAR_IMAGENS_LOCAIS = false;

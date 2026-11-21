@@ -1,0 +1,18 @@
+{
+  "name": "katchau-games",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Loja fictícia KaTchau Games: site em HTML/CSS/JS puro + API em Cloudflare Pages Functions com banco Neon (PostgreSQL).",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler pages dev public",
+    "seed": "node scripts/gerar-seed.cjs",
+    "test": "node --test tests/*.test.js"
+  },
+  "dependencies": {
+    "@neondatabase/serverless": "^1.0.0"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
+  }
+}

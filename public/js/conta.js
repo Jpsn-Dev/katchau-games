@@ -142,12 +142,68 @@
     document.getElementById("conta-desde").textContent = desde ? "Conta criada em " + desde : "";
   }
 
-  document.getElementById("btn-sair").addEventListener("click", function () {
-    auth.sair();
+  document.getElementById("btn-sair").addEventListener("click", async function () {
+    await auth.sair();
     toast("Você saiu da sua conta");
   });
 
-  auth.assinar(atualizar);
+  /* ---------- pedidos (somente quando o site está ligado ao banco de dados) ---------- */
+  const secaoPedidos = document.getElementById("conta-pedidos");
+  const listaPedidos = document.getElementById("lista-pedidos");
+  const STATUS = { aguardando_pagamento: "Aguardando pagamento", pago: "Pago", enviado: "Enviado", entregue: "Entregue", cancelado: "Cancelado" };
+  const METODOS = { pix: "Pix", cartao: "Cartão", boleto: "Boleto" };
+  let pedidosCarregadosPara = null;
+
+  function htmlPedido(p) {
+    const itens = p.itens.map(function (i) {
+      return "<li><span>" + i.quantidade + "× " + esc(i.nome) + "</span><span>" + dinheiro(i.preco * i.quantidade) + "</span></li>";
+    }).join("");
+    const data = formatarData(p.criadoEm);
+    const metodo = p.pagamento && METODOS[p.pagamento.metodo] ? " · " + METODOS[p.pagamento.metodo] : "";
+    return (
+      '<article class="order"><header><div><p class="order-id">Pedido nº ' + p.id + "</p>" +
+      '<p class="order-meta">' + (data ? esc(data) : "") + esc(metodo) + "</p></div>" +
+      '<span class="order-status">' + esc(STATUS[p.status] || p.status) + "</span></header>" +
+      '<ul class="order-items">' + itens + "</ul>" +
+      '<p class="order-total"><span>Total</span><strong>' + dinheiro(p.total) + "</strong></p></article>"
+    );
+  }
+
+  async function carregarPedidos(usuario) {
+    if (!usuario || auth.modo() !== "servidor") {
+      secaoPedidos.hidden = true;
+      pedidosCarregadosPara = null;
+      return;
+    }
+    if (pedidosCarregadosPara === usuario.email) return;
+    pedidosCarregadosPara = usuario.email;
+    secaoPedidos.hidden = false;
+    listaPedidos.innerHTML = '<p class="orders-msg">Carregando…</p>';
+    const r = await api.chamar("GET", "/api/pedidos");
+    if (r.status === 401) { auth.sessaoExpirou(); return; }
+    if (!r.ok || !r.dados) {
+      pedidosCarregadosPara = null;
+      listaPedidos.innerHTML = '<p class="orders-msg">Não foi possível carregar seus pedidos agora.</p>';
+      return;
+    }
+    listaPedidos.innerHTML = r.dados.pedidos.length
+      ? r.dados.pedidos.map(htmlPedido).join("")
+      : '<p class="orders-msg">Você ainda não fez nenhum pedido. <a href="catalogo.html">Ver o catálogo</a></p>';
+  }
+
+  /* Textos que mudam quando a conta fica no servidor (em vez de só no navegador). */
+  function ajustarTextos() {
+    if (auth.modo() !== "servidor") return;
+    document.querySelectorAll("[data-texto-servidor]").forEach(function (el) {
+      el.innerHTML = el.getAttribute("data-texto-servidor");
+    });
+  }
+
+  auth.assinar(function (usuario) { atualizar(); carregarPedidos(usuario); });
   atualizar();
+  auth.pronto.then(function () {
+    ajustarTextos();
+    carregarPedidos(auth.usuario());
+  });
   selecionarAba(window.location.hash === "#cadastro" ? "cadastro" : "entrar");
 })();
