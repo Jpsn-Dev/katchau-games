@@ -4,7 +4,7 @@ O site funciona de duas formas, escolhidas automaticamente:
 
 | Modo | Quando | O que acontece |
 |---|---|---|
-| **Servidor** | Publicado na Cloudflare Pages com o banco configurado | Contas, sessões e pedidos ficam no Neon (PostgreSQL). Finalizar pedido exige login. |
+| **Servidor** | Publicado na Cloudflare (Workers) com o banco configurado | Contas, sessões e pedidos ficam no Neon (PostgreSQL). Finalizar pedido exige login. |
 | **Local** | Aberto pelo arquivo ou pelo Live Server | Como antes: conta e carrinho só no navegador; "Finalizar compra" apenas simula. |
 
 A página pergunta a `/api/saude` se o banco responde; se não responder, usa o modo local.
@@ -12,7 +12,7 @@ A página pergunta a `/api/saude` se o banco responde; se não responder, usa o 
 ## Como funciona
 
 ```text
-navegador ──► /api/* (Cloudflare Pages Functions) ──► Neon (PostgreSQL)
+navegador ──► /api/* (Cloudflare Worker) ──► Neon (PostgreSQL)
 ```
 
 - O navegador nunca recebe a senha do banco. A string de conexão fica só na variável secreta `DATABASE_URL`.
@@ -33,21 +33,22 @@ navegador ──► /api/* (Cloudflare Pages Functions) ──► Neon (PostgreS
 
 O `schema.sql` cria o que falta e acrescenta as colunas que o site usa nas tabelas que já existem, sem apagar nada. Se aparecer erro sobre coluna obrigatória (`NOT NULL`) em `cliente`, `produto` ou outra tabela, significa que o seu colega criou uma coluna que o site não preenche: torne-a opcional (`ALTER TABLE tabela ALTER COLUMN coluna DROP NOT NULL;`) ou ajuste o código.
 
-### 2. Cloudflare Pages
+### 2. Cloudflare Workers
 
-1. Em **Workers & Pages → Create → Pages → Connect to Git**, escolha este repositório.
-2. Configure: *Framework preset* **None**, *Build command* em branco, *Build output directory* **`public`**. A pasta `functions/` é detectada sozinha e as dependências do `package.json` são instaladas no deploy.
-3. Em **Settings → Variables and Secrets**, adicione `DATABASE_URL` (tipo *Secret*) com a connection string, para *Production* e *Preview*.
-4. Faça o deploy e abra `https://<seu-projeto>.pages.dev/api/saude`. O esperado é `{"ok":true,"banco":true}`.
+O projeto já tem o `wrangler.jsonc`: ele publica a pasta `public/` como arquivos estáticos e envia só as rotas `/api/*` ao Worker (`worker/index.js`). O nome do Worker é `katchau`, o mesmo do endereço `katchau.jpsn-dev.workers.dev`.
 
-Os nomes dos menus da Cloudflare podem mudar com o tempo; a ideia é sempre: build sem comando, saída em `public`, variável secreta `DATABASE_URL`.
+1. No Worker `katchau` (Workers & Pages), confira em **Settings → Build** que o repositório está conectado, o *Build command* está em branco e o *Deploy command* é `npx wrangler deploy` (padrão). As dependências do `package.json` são instaladas no deploy.
+2. Em **Settings → Variables and Secrets**, adicione `DATABASE_URL` como **Secret**, com a connection string do Neon.
+3. Faça um novo deploy (um push na `main` já dispara) e abra `https://katchau.jpsn-dev.workers.dev/api/saude`. O esperado é `{"ok":true,"banco":true}`; se vier `Banco de dados não configurado`, falta o passo 2.
+
+Os nomes dos menus da Cloudflare podem mudar com o tempo; a ideia é sempre: deploy com o `wrangler.jsonc` e variável secreta `DATABASE_URL`.
 
 ### 3. Rodar na sua máquina com a API
 
 ```bash
 npm install
 cp .dev.vars.example .dev.vars    # edite com a sua connection string
-npm run dev                        # abre em http://localhost:8788
+npm run dev                        # abre em http://localhost:8787
 ```
 
 `.dev.vars` está no `.gitignore` e nunca deve ser enviado ao GitHub.

@@ -1,6 +1,6 @@
 # KaTchau Games
 
-Loja virtual fictícia de games, consoles e periféricos, desenvolvida como projeto acadêmico. O site é feito com HTML5, CSS3 e JavaScript puro
+Loja virtual fictícia de games, consoles e periféricos, desenvolvida como projeto acadêmico. O site é feito com HTML5, CSS3 e JavaScript puro.
 
 ## Funcionalidades
 
@@ -41,7 +41,7 @@ As fontes vêm do Google Fonts e as imagens dos produtos são carregadas da inte
 
 ```text
 katchau-games/
-├── public/                 # Site (é a pasta publicada na Cloudflare Pages)
+├── public/                 # Site (pasta publicada como arquivos estáticos)
 │   ├── *.html              # Páginas
 │   ├── css/style.css       # Estilos
 │   └── js/
@@ -54,8 +54,9 @@ katchau-games/
 │       ├── componentes.js  # Cartão de produto e estrelas
 │       ├── main.js         # Comportamento comum (cabeçalho, busca, menu)
 │       └── <página>.js     # Script específico de cada página
-├── functions/api/          # Entrada da API (Cloudflare Pages Functions)
+├── worker/                 # Entrada do Worker da Cloudflare (rotas /api/*)
 ├── server/                 # Rotas, validação e segurança da API
+├── wrangler.jsonc          # Configuração do deploy na Cloudflare
 ├── db/                     # schema.sql e seed.sql (PostgreSQL)
 ├── scripts/                # Gerar o seed e baixar imagens
 ├── tests/                  # Testes da API
@@ -65,7 +66,7 @@ katchau-games/
 
 ## Banco de dados e conta
 
-As tabelas são `categoria`, `marca`, `produto`, `cliente`, `endereco`, `pedido`, `item_pedido` e `pagamento`, mais `sessao` para o login. As senhas são guardadas como hash (PBKDF2-SHA256 com sal), a sessão usa cookie `HttpOnly`, e os preços dos pedidos vêm sempre do banco. O pagamento é apenas simulado: nenhuma cobrança real é feita. O guia completo, com os passos para o Neon e a Cloudflare, está em [`docs/banco-de-dados.md`](docs/banco-de-dados.md).
+As tabelas são `categoria`, `marca`, `produto`, `cliente`, `endereco`, `pedido`, `item_pedido` e `pagamento`, mais `sessao` para o login. As senhas são guardadas como hash (PBKDF2-SHA256 com sal), a sessão usa cookie `HttpOnly`, e os preços dos pedidos vêm sempre do banco. O pagamento é apenas simulado: nenhuma cobrança real é feita. O guia completo, com os passos para o Neon e o Worker da Cloudflare, está em [`docs/banco-de-dados.md`](docs/banco-de-dados.md).
 
 ## Atividades em Linguagem C
 
