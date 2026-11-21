@@ -1,6 +1,6 @@
 # KaTchau Games
 
-Loja virtual fictícia de games, consoles e periféricos, desenvolvida como projeto acadêmico. O site é feito com **HTML5, CSS3 e JavaScript puro** (sem frameworks nem etapa de build). Quando publicado, uma pequena API em JavaScript (Cloudflare Pages Functions) conecta o site ao banco **Neon (PostgreSQL)**.
+Loja virtual fictícia de games, consoles e periféricos, desenvolvida como projeto acadêmico. O site é feito com HTML5, CSS3 e JavaScript puro
 
 ## Funcionalidades
 
@@ -82,3 +82,7 @@ gcc -Wall -o programa atividades-c/cadastro-e-login/main.c
 ## Manutenção
 
 Cabeçalho e rodapé são repetidos em cada arquivo `.html`; ao alterar o menu, atualize todas as páginas. Ao alterar produtos em `public/js/dados.js`, rode `npm run seed` e execute o novo `db/seed.sql` no banco.
+
+Prévia do site desenvolvido:
+https://katchau.jpsn-dev.workers.dev/
+
