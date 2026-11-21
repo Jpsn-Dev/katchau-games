@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#17181c">
+  <title>Atendimento | KaTchau</title>
+  <meta name="description" content="Central de atendimento da KaTchau: dúvidas sobre pedidos, produtos e o projeto.">
+  <meta name="author" content="KaTchau">
+  <meta property="og:site_name" content="KaTchau">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Atendimento | KaTchau">
+  <meta property="og:description" content="Central de atendimento da KaTchau.">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="site">
+    <header class="site-header">
+      <div class="topbar"><div class="wrap">
+        <span>Projeto acadêmico · preços ilustrativos · nenhuma venda é realizada</span>
+        <nav><a href="atendimento.html">Atendimento</a><a href="faq.html">Dúvidas frequentes</a><a href="sobre.html">Sobre a KaTchau</a></nav>
+      </div></div>
+
+      <div class="wrap header-main">
+        <button type="button" class="menu-btn" data-abrir-menu aria-label="Abrir menu"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg></button>
+        <a href="index.html" aria-label="KaTchau — página inicial" class="logo "><img data-img="katchau-logo.webp" alt="KaTchau Games &amp; Gear" width="700" height="278"></a>
+        <form role="search" class="search search-desktop"><svg class="icon icon-search" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><input type="search" placeholder="Buscar consoles, jogos e periféricos" aria-label="Buscar produtos"><button type="submit">Buscar</button></form>
+        <div class="header-cart">
+          <a href="conta.html" class="cart-btn account-btn" data-conta-link aria-label="Entrar ou criar conta">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span class="cart-label account-label" data-conta-label="curto">Entrar</span>
+          </a>
+          <a href="carrinho.html" class="cart-btn" data-cart-link aria-label="Carrinho, 0 itens">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg><span class="cart-label">Carrinho</span><span class="cart-count" data-cart-count>0</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="nav-row"><div class="wrap">
+        <nav class="main-nav"><a href="index.html">Início</a><a href="catalogo.html">Catálogo</a><a href="consoles.html">Consoles</a><a href="jogos.html">Jogos</a><a href="perifericos.html">Periféricos</a></nav>
+        <div class="platform-pills"><span class="label">Plataformas</span><a href="catalogo.html?plataforma=PlayStation">PlayStation</a><a href="catalogo.html?plataforma=Xbox">Xbox</a><a href="catalogo.html?plataforma=Nintendo">Nintendo</a></div>
+      </div></div>
+      <div class="wrap search-mobile"><form role="search" class="search "><svg class="icon icon-search" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><input type="search" placeholder="Buscar consoles, jogos e periféricos" aria-label="Buscar produtos"><button type="submit">Buscar</button></form></div>
+    </header>
+
+    <div class="layer" id="menu-camada" hidden>
+      <div class="overlay"></div>
+      <div class="sheet" role="dialog" aria-modal="true" aria-label="Menu">
+        <div class="sheet-head">
+          <h2 class="sr-only">Menu</h2>
+          <a href="index.html" aria-label="KaTchau — página inicial" class="logo logo-10"><img data-img="katchau-logo.webp" alt="KaTchau Games &amp; Gear" width="700" height="278"></a>
+        </div>
+        <div class="sheet-body">
+          <form role="search" class="search "><svg class="icon icon-search" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><input type="search" placeholder="Buscar consoles, jogos e periféricos" aria-label="Buscar produtos"><button type="submit">Buscar</button></form>
+          <nav class="mobile-nav"><a href="index.html">Início</a><a href="catalogo.html">Catálogo</a><a href="consoles.html">Consoles</a><a href="jogos.html">Jogos</a><a href="perifericos.html">Periféricos</a><a href="atendimento.html">Atendimento</a><a href="faq.html">Dúvidas frequentes</a><a href="sobre.html">Sobre a KaTchau</a><a href="carrinho.html">Carrinho</a><a href="conta.html"><span data-conta-label="menu">Entrar</span></a></nav>
+        </div>
+        <button type="button" class="sheet-close" data-fechar aria-label="Fechar"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg><span class="sr-only">Fechar</span></button>
+      </div>
+    </div>
+    <main>
+      <section class="page-header">
+        <div class="abs grid-texture"></div>
+        <div class="wrap">
+          <nav aria-label="Navegação estrutural" class="crumbs"><a href="index.html">Início</a><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg><span class="current">Atendimento</span></nav>
+          <span class="eyebrow">Central de ajuda</span>
+          <h1 class="display t-5xl md-t-7xl">Como podemos <span class="text-gradient-brand">ajudar?</span></h1>
+          <p class="desc">Escolha um assunto ou envie uma mensagem para a equipe do projeto.</p>
+        </div>
+      </section>
+      <div class="wrap support">
+        <div class="topics"><div class="topic"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"/><path d="M12 22V12"/><polyline points="3.29 7 12 12 20.71 7"/><path d="m7.5 4.27 9 5.15"/></svg><p class="t">Pedidos e entregas</p><p class="d">Como a loja é demonstrativa, nenhum pedido ou pagamento é processado.</p></div><div class="topic"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg><p class="t">Informações de produtos</p><p class="d">Consulte os departamentos para ver detalhes, preços e plataformas de cada item.</p></div><div class="topic"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg><p class="t">Sobre o projeto</p><p class="d">A KaTchau é um projeto acadêmico, sem equipe comercial ou canal de vendas ativo.</p></div></div>
+        <div class="contact-grid">
+          <div>
+            <span class="eyebrow">Fale conosco</span>
+            <h2 class="display">Envie sua mensagem</h2>
+            <p class="intro">Este formulário é demonstrativo: nenhuma mensagem ou dado é enviado ou armazenado. Para dúvidas rápidas, confira as <a href="faq.html">perguntas frequentes</a>.</p>
+            <div class="email-card">
+              <div class="email-row"><span class="email-ico"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"/><rect x="2" y="4" width="20" height="16" rx="2"/></svg></span>
+                <div class="email-txt"><p class="k">E-mail do projeto</p><a href="mailto:joao.p.nunes.200707@uni9.edu.br">joao.p.nunes.200707@uni9.edu.br</a></div>
+                <button type="button" class="copy-btn" id="copiar-email" aria-label="Copiar e-mail"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg></button></div>
+              <p class="note">Endereço demonstrativo do projeto acadêmico — não há atendimento comercial.</p>
+            </div>
+          </div>
+          <form class="form-card" id="form-contato">
+            <div class="form-row">
+              <div class="field"><label for="nome">Nome</label><input class="input" id="nome" required maxlength="80" placeholder="Seu nome"></div>
+              <div class="field"><label for="email">E-mail</label><input class="input" id="email" type="email" required maxlength="120" placeholder="voce@email.com"></div>
+            </div>
+            <div class="field"><label for="assunto">Assunto</label><input class="input" id="assunto" required maxlength="120" placeholder="Sobre o que você quer falar?"></div>
+            <div class="field"><label for="mensagem">Mensagem</label><textarea class="textarea" id="mensagem" required maxlength="1000" rows="5" placeholder="Escreva sua mensagem"></textarea></div>
+            <button type="submit" class="btn btn-brand btn-xl w-full sm-w-auto">Enviar mensagem</button>
+            <p role="status" class="form-status" id="form-enviado" hidden>Obrigado! Como este é um ambiente demonstrativo, sua mensagem não foi enviada nem armazenada.</p>
+          </form>
+        </div>
+      </div>
+    </main>
+    <footer class="site-footer">
+      <div class="footer-perks-wrap"><ul class="wrap footer-perks"><li><span class="perk-ico"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><line x1="6" x2="10" y1="11" y2="11"/><line x1="8" x2="8" y1="9" y2="13"/><line x1="15" x2="15.01" y1="12" y2="12"/><line x1="18" x2="18.01" y1="10" y2="10"/><path d="M17.32 5H6.68a4 4 0 0 0-3.978 3.59c-.006.052-.01.101-.017.152C2.604 9.416 2 14.456 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.414-1.414A2 2 0 0 1 9.828 16h4.344a2 2 0 0 1 1.414.586L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.545-.604-6.584-.685-7.258-.007-.05-.011-.1-.017-.151A4 4 0 0 0 17.32 5z"/></svg></span><span class="txt"><span class="t">Só PlayStation, Xbox e Nintendo</span><span class="d">Curadoria focada em consoles</span></span></li><li><span class="perk-ico"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z"/><circle cx="7.5" cy="7.5" r=".5" fill="currentColor"/></svg></span><span class="txt"><span class="t">Até 10x sem juros</span><span class="d">Condições ilustrativas</span></span></li><li><span class="perk-ico"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg></span><span class="txt"><span class="t">Entrega simulada</span><span class="d">Nenhum pedido é enviado</span></span></li><li><span class="perk-ico"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg></span><span class="txt"><span class="t">Ambiente seguro</span><span class="d">Sem pagamentos reais</span></span></li></ul></div>
+      <div class="wrap footer-main">
+        <div class="footer-brand">
+          <a href="index.html" aria-label="KaTchau — página inicial" class="logo logo-12"><img data-img="katchau-logo.webp" alt="KaTchau Games &amp; Gear" width="700" height="278"></a>
+          <p>Consoles, jogos e periféricos para PlayStation, Xbox e Nintendo — uma vitrine gamer criada como projeto acadêmico.</p>
+          <div class="social" aria-label="Redes sociais (perfis ainda não existem)"><span title="Instagram — perfil não disponível neste projeto"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg><span class="sr-only">Instagram (indisponível)</span></span><span title="YouTube — perfil não disponível neste projeto"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17"/><path d="m10 15 5-3-5-3z"/></svg><span class="sr-only">YouTube (indisponível)</span></span><span title="Facebook — perfil não disponível neste projeto"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg><span class="sr-only">Facebook (indisponível)</span></span></div>
+        </div>
+        <div class="footer-col"><h3>Departamentos</h3><div class="links">
+          <a href="catalogo.html">Catálogo completo</a><a href="consoles.html">Consoles</a><a href="jogos.html">Jogos</a><a href="perifericos.html">Controles e periféricos</a></div></div>
+        <div class="footer-col"><h3>Plataformas</h3><div class="links">
+          <a href="catalogo.html?plataforma=PlayStation">PlayStation</a><a href="catalogo.html?plataforma=Xbox">Xbox</a><a href="catalogo.html?plataforma=Nintendo">Nintendo</a></div></div>
+        <div class="footer-col"><h3>Institucional</h3><div class="links">
+          <a href="atendimento.html">Atendimento</a><a href="faq.html">Dúvidas frequentes</a><a href="sobre.html">Sobre a KaTchau</a><a href="conta.html" data-conta-label="rodape">Entrar / Criar conta</a></div></div>
+        <div class="footer-col"><h3>Contato</h3>
+          <a href="mailto:joao.p.nunes.200707@uni9.edu.br" class="footer-mail"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"/><rect x="2" y="4" width="20" height="16" rx="2"/></svg><span>joao.p.nunes.200707@uni9.edu.br</span></a>
+          <p class="mnote">E-mail demonstrativo. Sem atendimento comercial.</p></div>
+      </div>
+      <div class="footer-bottom"><div class="wrap">
+        <span>© 2026 KaTchau. Todos os direitos reservados. Projeto acadêmico sem fins comerciais.</span>
+        <span>Preços, avaliações e condições ilustrativos. Marcas e imagens pertencem aos seus donos.</span>
+      </div></div>
+    </footer>
+  </div>
+  <script src="js/dados.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/avaliacoes.js"></script>
+  <script src="js/carrinho.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/componentes.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/atendimento.js"></script>
+</body>
+</html>
