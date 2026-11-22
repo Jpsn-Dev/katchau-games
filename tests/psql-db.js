@@ -32,7 +32,11 @@ function lerCsv(texto) {
 
 export function executar(sql) {
   const r = spawnSync("psql", ["-X", "-q", "--csv", "-v", "ON_ERROR_STOP=1"], { input: sql, encoding: "utf8" });
-  if (r.status !== 0) throw new Error(r.stderr.trim());
+  if (r.status !== 0) {
+    const e = new Error(r.stderr.trim());
+    if (/violates check constraint/.test(r.stderr)) e.code = "23514";
+    throw e;
+  }
   return r.stdout;
 }
 

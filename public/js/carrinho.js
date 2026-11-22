@@ -103,7 +103,13 @@ const carrinho = (function () {
     adicionar: function (id, qtd) { gravar(adicionarItem(this.itens(), id, qtd)); },
     definirQtd: function (id, qtd) { gravar(definirQtd(this.itens(), id, qtd)); },
     remover: function (id) { gravar(removerItem(this.itens(), id)); },
-    limpar: function () { gravar([]); }
+    limpar: function () { gravar([]); },
+    /** Substitui todo o carrinho (usado ao conciliar com o carrinho da conta). */
+    definir: function (itens) {
+      gravar(itens
+        .filter(function (i) { return i && Number.isFinite(Number(i.id)) && obterProduto(Number(i.id)); })
+        .reduce(function (lista, i) { return adicionarItem(lista, Number(i.id), limitarQtd(Number(i.qty) || 1)); }, []));
+    }
   };
 })();
 

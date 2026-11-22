@@ -43,6 +43,37 @@
     ["uf", "Informe o estado com a sigla (ex.: SP).", function (v) { return /^[A-Za-z]{2}$/.test(v.trim()); }]
   ];
 
+  /* Endereços já usados em pedidos anteriores (o mais recente já vem preenchido). */
+  const campoSalvos = document.getElementById("ck-salvos-campo");
+  const seletorSalvos = document.getElementById("ck-salvos");
+  let enderecosSalvos = [];
+
+  function preencherEndereco(e) {
+    const c = formCheckout.elements;
+    c.cep.value = e.cep; c.logradouro.value = e.logradouro; c.numero.value = e.numero;
+    c.complemento.value = e.complemento; c.bairro.value = e.bairro; c.cidade.value = e.cidade; c.uf.value = e.uf;
+  }
+
+  seletorSalvos.addEventListener("change", function () {
+    const e = enderecosSalvos[Number(seletorSalvos.value)];
+    if (e) preencherEndereco(e);
+  });
+
+  async function carregarEnderecosSalvos() {
+    const r = await api.chamar("GET", "/api/enderecos");
+    if (!r.ok || !r.dados || !r.dados.enderecos.length) { campoSalvos.hidden = true; return; }
+    enderecosSalvos = r.dados.enderecos;
+    seletorSalvos.length = 1;
+    enderecosSalvos.forEach(function (e, i) {
+      const opcao = document.createElement("option");
+      opcao.value = String(i);
+      opcao.textContent = e.logradouro + ", " + e.numero + (e.complemento ? " – " + e.complemento : "") + " · " + e.cidade + "/" + e.uf;
+      seletorSalvos.appendChild(opcao);
+    });
+    campoSalvos.hidden = false;
+    if (!formCheckout.elements.cep.value) { seletorSalvos.value = "0"; preencherEndereco(enderecosSalvos[0]); }
+  }
+
   function abrirCheckout(origem) {
     const itens = carrinho.itens().filter(function (i) { return obterProduto(i.id); });
     const totais = totaisCarrinho(itens, PRODUTOS);
@@ -51,6 +82,7 @@
     painelForm.hidden = false;
     painelSucesso.hidden = true;
     mostrarErroCheckout("");
+    carregarEnderecosSalvos();
     checkout.abrir(origem);
   }
 

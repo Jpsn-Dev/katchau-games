@@ -1470,6 +1470,13 @@ input[type="search"]::-webkit-search-decoration { -webkit-appearance: none; }
 #checkout-sucesso .dialog-foot { margin-top: 1rem; }
 #form-checkout .dialog-foot { margin-top: 0.25rem; }
 
+.profile { margin-top: 1rem; max-width: 36rem; border: 1px solid var(--border); border-radius: var(--radius-xl); padding: 0.25rem 1.25rem; background: var(--card); }
+.profile summary { cursor: pointer; padding: 0.875rem 0; font-weight: 600; }
+.profile[open] summary { border-bottom: 1px solid var(--border); margin-bottom: 1rem; }
+.profile form { padding-bottom: 1.25rem; }
+.profile form + form { border-top: 1px solid var(--border); padding-top: 1.25rem; }
+select.input { appearance: auto; }
+
 .orders { margin-top: 1.5rem; max-width: 36rem; }
 .orders .h-label { margin-bottom: 0.75rem; }
 .orders-msg { font-size: 0.875rem; color: var(--muted-foreground); }

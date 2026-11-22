@@ -16,18 +16,51 @@ navegador ──► /api/* (Cloudflare Worker) ──► Neon (PostgreSQL)
 ```
 
 - O navegador nunca recebe a senha do banco. A string de conexão fica só na variável secreta `DATABASE_URL`.
-- O catálogo exibido continua vindo de `public/js/dados.js`. O banco recebe uma cópia dos produtos (`db/seed.sql`, gerada por `npm run seed`) e **é ele quem define os preços dos pedidos**: valores enviados pelo navegador são ignorados.
+- **Catálogo:** o ponto de partida é `public/js/dados.js` (e o `db/seed.sql`, gerado por `npm run seed`, copia esses produtos para o banco). Com a API ativa, cada visita busca `/api/produtos` e guarda uma cópia no navegador; **a página seguinte já usa os preços e dados do banco** (a cópia vale por 7 dias e é descartada se for inválida). Assim, para mudar um preço basta alterar a linha em `produto` no Neon. Sem API, vale o `dados.js`.
+- **Pedidos:** o banco **define os preços**; valores enviados pelo navegador são ignorados.
+- **Carrinho da conta:** ao entrar, o carrinho do navegador e o da conta se juntam (maior quantidade de cada produto); as mudanças vão ao banco. Ao sair da conta, o carrinho deste navegador é esvaziado, mas continua salvo na conta. Fazer o pedido esvazia o carrinho da conta.
 - Ao alterar produtos em `dados.js`, rode `npm run seed` e execute o novo `db/seed.sql` no Neon.
 
-## Tabelas
+## Modelagem
 
-`categoria`, `marca`, `produto`, `cliente`, `endereco`, `pedido`, `item_pedido`, `pagamento` (relações 1:N do modelo do projeto; pedido 1 : 0..1 pagamento) e `sessao` (login por cookie).
+Modelo conceitual (BRModelo): [`docs/modelagem/modelagem-conceitual.pdf`](modelagem/modelagem-conceitual.pdf)
+
+![Modelo conceitual do banco de dados](modelagem/modelagem-conceitual.png)
+
+As relações do modelo estão todas no banco: Cliente 1:N Endereço, Cliente 1:N Pedido, Endereço 1:N Pedido, Categoria 1:N Produto, Marca 1:N Produto, Pedido 1:N Itens e Produto 1:N Itens, Pedido 1:0..1 Pagamento.
+
+Como cada atributo do modelo aparece no banco (o banco usa nomes curtos, sem repetir o nome da tabela):
+
+| Entidade (modelo) | Atributo do modelo | Coluna no banco |
+|---|---|---|
+| Clientes → `cliente` | Id_Cliente · nome · Email | `id_cliente` · `nome` · `email` |
+| | Data_cadastro | `criado_em` |
+| | Telefone · cpf | `telefone` · `cpf` (existem, mas o site **não coleta**: são dados pessoais desnecessários numa demonstração) |
+| | — (acréscimo para o login) | `senha_hash` |
+| Endereço → `endereco` | Id_endereço · Id_cliente · cep · numero · Bairro · Cidade | `id_endereco` · `id_cliente` · `cep` · `numero` · `bairro` · `cidade` |
+| | rua · estado | `logradouro` · `uf` (sigla de 2 letras) |
+| | — | `complemento` (acréscimo) |
+| Categorias → `categoria` | Id_categoria · Nome_categoria · Descrição | `id_categoria` · `nome` · `descricao` |
+| Marcas → `marca` | Id_marca · Nome_marca | `id_marca` · `nome` |
+| Produtos → `produto` | Id_produto · Nome_Produto · Preço · Estoque · Id_marca · Id_categoria | `id_produto` · `nome` · `preco` · `estoque` · `id_marca` · `id_categoria` |
+| | Descrição | `descricao` (existe, ainda sem preenchimento: o site monta o texto no navegador) |
+| | — | `slug`, `plataformas`, `preco_antigo`, `etiqueta`, `imagem`, `tipo`, `ativo` (acréscimos do site) |
+| Pedido → `pedido` | Id_pedido · Id_cliente · Id_endereço · Status | `id_pedido` · `id_cliente` · `id_endereco` · `status` |
+| | Data_pedido · Valor total | `criado_em` · `total` |
+| Itens_Pedido → `item_pedido` | Id_item · Id_pedido · Id_produto · Preço_unitario · Subtotal | `id_item` · `id_pedido` · `id_produto` · `preco_unitario` · `subtotal` |
+| | "Qualidade" (provável erro de digitação de *Quantidade*) | `quantidade` |
+| Pagamentos → `pagamento` | Id_Pagamento · Id_pedido · Metodo de pagamento | `id_pagamento` · `id_pedido` · `metodo` |
+| | Status_pagamento · Valor_pago · data_pagamento | `status` · `valor` · `data_pagamento` |
+
+Tabelas de apoio que não fazem parte do modelo conceitual: `sessao` (login), `carrinho_item` (carrinho da conta) e `tentativa_login` (limite de tentativas).
+
+**Estoque:** cada produto novo começa com 100 unidades (valor definido no seed, ajuste como quiser). O pedido baixa o estoque e é recusado se não houver unidades; a coluna nunca fica negativa. Reexecutar o `seed.sql` não altera o estoque existente.
 
 ## Passo a passo
 
 ### 1. Neon
 
-1. (Recomendado) No Neon, crie um **branch** do banco atual para testar sem mexer nos dados do seu colega.
+1. (Recomendado) No Neon, crie um **branch** do banco atual para testar sem mexer nos dados do seu colega. **Atenção:** o `seed.sql` grava os produtos com `id_produto` de 1 a 36 e, se já existirem produtos com esses números, os dados deles são **substituídos**.
 2. Abra o **SQL Editor** e execute, nesta ordem, o conteúdo de `db/schema.sql` e depois `db/seed.sql`. Ambos podem ser executados mais de uma vez.
 3. Copie a **connection string** (Connection details → formato `postgresql://…`).
 
@@ -40,6 +73,11 @@ O projeto já tem o `wrangler.jsonc`: ele publica a pasta `public/` como arquivo
 1. No Worker `katchau` (Workers & Pages), confira em **Settings → Build** que o repositório está conectado, o *Build command* está em branco e o *Deploy command* é `npx wrangler deploy` (padrão). As dependências do `package.json` são instaladas no deploy.
 2. Em **Settings → Variables and Secrets**, adicione `DATABASE_URL` como **Secret**, com a connection string do Neon.
 3. Faça um novo deploy (um push na `main` já dispara) e abra `https://katchau.jpsn-dev.workers.dev/api/saude`. O esperado é `{"ok":true,"banco":true}`; se vier `Banco de dados não configurado`, falta o passo 2.
+4. Para conferir tudo de ponta a ponta (banco, cadastro, carrinho, pedido), rode no seu computador:
+   ```bash
+   node scripts/verificar-api.cjs https://katchau.jpsn-dev.workers.dev
+   ```
+   Ele cria uma conta e um pedido de teste (o próprio script mostra como apagá-los depois).
 
 Os nomes dos menus da Cloudflare podem mudar com o tempo; a ideia é sempre: deploy com o `wrangler.jsonc` e variável secreta `DATABASE_URL`.
 
@@ -60,11 +98,14 @@ npm run dev                        # abre em http://localhost:8787
 | `GET /api/saude` | Confere a conexão com o banco |
 | `GET /api/produtos` | Produtos do banco |
 | `POST /api/cadastro` · `POST /api/login` · `POST /api/logout` · `GET /api/sessao` | Conta e sessão |
+| `GET /api/carrinho` · `PUT /api/carrinho` | Carrinho da conta (exigem login) |
+| `GET /api/enderecos` | Endereços usados em pedidos anteriores (exige login) |
+| `POST /api/perfil` · `POST /api/senha` | Trocar nome e senha (exigem login) |
 | `GET /api/pedidos` · `POST /api/pedidos` | Histórico e criação de pedidos (exigem login) |
 
-Segurança: consultas sempre parametrizadas; senha com PBKDF2-SHA256 (100 mil iterações, limite do Workers) e sal aleatório; sessão em cookie `HttpOnly` + `SameSite=Lax` (o banco guarda só o hash do token); verificação de `Origin` nas requisições que alteram dados; mensagem única para e-mail inexistente e senha errada; pedido gravado de forma atômica (endereço, pedido, itens e pagamento juntos).
+Segurança: consultas sempre parametrizadas; senha com PBKDF2-SHA256 (100 mil iterações, limite do Workers) e sal aleatório; sessão em cookie `HttpOnly` + `SameSite=Lax` (o banco guarda só o hash do token); verificação de `Origin` nas requisições que alteram dados; mensagem única para e-mail inexistente e senha errada; **limite de 5 falhas por e-mail e 30 por endereço IP a cada 15 minutos**; trocar a senha encerra as outras sessões; pedido gravado de forma atômica (endereço, pedido, itens e pagamento juntos), reaproveitando um endereço idêntico já salvo.
 
-Limites conhecidos: não há limitação de tentativas de login (use as regras de *Rate limiting* da Cloudflare se quiser), o carrinho continua só no navegador, e o pagamento é apenas registrado como `pendente`: nenhuma cobrança real existe.
+Limites conhecidos: não existe recuperação de senha (exigiria envio de e-mail) e o pagamento é apenas registrado como `pendente`: nenhuma cobrança real existe.
 
 ## Testes
 

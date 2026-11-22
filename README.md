@@ -9,8 +9,10 @@ Loja virtual fictícia de games, consoles e periféricos, desenvolvida como proj
 - Estado dos filtros na URL, o que permite compartilhar o link de uma busca.
 - Página de produto com avaliações demonstrativas.
 - Carrinho salvo no navegador, com quantidades, remoção, resumo, descontos e parcelamento.
-- Cadastro e login (`conta.html`), com conta salva no banco quando o site está publicado.
-- Finalização de pedido (endereço e forma de pagamento simulada) e histórico em "Meus pedidos".
+- Cadastro e login (`conta.html`), com conta salva no banco quando o site está publicado; edição de nome e senha.
+- Carrinho que acompanha a conta e funciona em qualquer aparelho.
+- Finalização de pedido (endereço salvo para as próximas compras e forma de pagamento simulada) e histórico em "Meus pedidos".
+- Proteção contra tentativas repetidas de login.
 - Atendimento, perguntas frequentes e página institucional.
 - Layout responsivo e navegação por teclado.
 
@@ -51,6 +53,8 @@ katchau-games/
 │       ├── carrinho.js     # Regras e armazenamento do carrinho
 │       ├── api.js          # Comunicação com a API
 │       ├── auth.js         # Cadastro e login (servidor ou local)
+│       ├── carrinho-conta.js    # Carrinho salvo na conta
+│       ├── catalogo-servidor.js # Cópia do catálogo do banco
 │       ├── componentes.js  # Cartão de produto e estrelas
 │       ├── main.js         # Comportamento comum (cabeçalho, busca, menu)
 │       └── <página>.js     # Script específico de cada página
@@ -58,13 +62,18 @@ katchau-games/
 ├── server/                 # Rotas, validação e segurança da API
 ├── wrangler.jsonc          # Configuração do deploy na Cloudflare
 ├── db/                     # schema.sql e seed.sql (PostgreSQL)
-├── scripts/                # Gerar o seed e baixar imagens
+├── partials/               # Modelos do cabeçalho e do rodapé
+├── scripts/                # Gerar seed e páginas, baixar imagens, verificar a API
 ├── tests/                  # Testes da API
-├── docs/                   # Guia do banco de dados e da publicação
+├── docs/                   # Guia do banco de dados + modelagem (PDF e imagem)
 └── atividades-c/           # Atividades em Linguagem C
 ```
 
 ## Banco de dados e conta
+
+![Modelo conceitual do banco de dados](docs/modelagem/modelagem-conceitual.png)
+
+O modelo conceitual (BRModelo) também está em [PDF](docs/modelagem/modelagem-conceitual.pdf), e o guia explica como cada atributo do modelo aparece no banco.
 
 As tabelas são `categoria`, `marca`, `produto`, `cliente`, `endereco`, `pedido`, `item_pedido` e `pagamento`, mais `sessao` para o login. As senhas são guardadas como hash (PBKDF2-SHA256 com sal), a sessão usa cookie `HttpOnly`, e os preços dos pedidos vêm sempre do banco. O pagamento é apenas simulado: nenhuma cobrança real é feita. O guia completo, com os passos para o Neon e o Worker da Cloudflare, está em [`docs/banco-de-dados.md`](docs/banco-de-dados.md).
 
@@ -82,8 +91,12 @@ gcc -Wall -o programa atividades-c/cadastro-e-login/main.c
 
 ## Manutenção
 
-Cabeçalho e rodapé são repetidos em cada arquivo `.html`; ao alterar o menu, atualize todas as páginas. Ao alterar produtos em `public/js/dados.js`, rode `npm run seed` e execute o novo `db/seed.sql` no banco.
+O cabeçalho e o rodapé ficam em `partials/`: depois de editá-los, rode `npm run paginas` para atualizar todas as páginas (o resultado continua HTML puro). Ao alterar produtos em `public/js/dados.js`, rode `npm run seed` e execute o novo `db/seed.sql` no banco.
 
-Prévia do site desenvolvido:
+## Prévia
+
 https://katchau.jpsn-dev.workers.dev/
 
+## Licença
+
+Distribuído sob a licença MIT (arquivo [`LICENSE`](LICENSE)). Projeto acadêmico: preços, avaliações e condições são ilustrativos, e marcas e imagens pertencem aos seus donos.

@@ -258,9 +258,39 @@ const auth = (function () {
       return { ok: true };
     },
 
+    /** Troca o nome (só no modo servidor). */
+    atualizarNome: async function (nome) {
+      const erro = validarNome(nome);
+      if (erro) return { ok: false, erro: erro };
+      await pronto;
+      if (modo !== "servidor") return { ok: false, erro: "Disponível apenas com o banco de dados ativo." };
+      const r = await api.chamar("POST", "/api/perfil", { nome: String(nome).trim().replace(/\s+/g, " ") });
+      if (r.rede) return SEM_REDE;
+      if (r.status === 401) { gravarCacheServidor(null); avisar(); return { ok: false, erro: "Sua sessão expirou. Entre novamente." }; }
+      if (!r.ok) return { ok: false, erro: (r.dados && r.dados.erro) || "Não foi possível salvar agora." };
+      gravarCacheServidor(r.dados.usuario);
+      avisar();
+      return { ok: true };
+    },
+
+    /** Troca a senha (só no modo servidor); as outras sessões são encerradas pelo servidor. */
+    alterarSenha: async function (atual, nova) {
+      const erro = validarSenha(nova);
+      if (erro) return { ok: false, erro: erro };
+      if (!atual) return { ok: false, erro: "Informe sua senha atual." };
+      await pronto;
+      if (modo !== "servidor") return { ok: false, erro: "Disponível apenas com o banco de dados ativo." };
+      const r = await api.chamar("POST", "/api/senha", { atual: atual, nova: nova });
+      if (r.rede) return SEM_REDE;
+      if (r.status === 401 && r.dados && /expirou|Entre/.test(r.dados.erro || "")) { gravarCacheServidor(null); avisar(); }
+      if (!r.ok) return { ok: false, erro: (r.dados && r.dados.erro) || "Não foi possível alterar a senha agora." };
+      return { ok: true };
+    },
+
     sair: async function () {
       await pronto;
       if (modo === "servidor") await api.chamar("POST", "/api/logout", {});
+      window.dispatchEvent(new Event("katchau:saiu"));
       gravarCacheServidor(null);
       try {
         window.localStorage.removeItem(CHAVE_SESSAO);

@@ -57,8 +57,8 @@ export function validarEndereco(bruto) {
 }
 
 /** Junta itens repetidos e valida ids e quantidades. Devolve { itens } ou { erro }. */
-export function validarItens(bruto) {
-  if (!Array.isArray(bruto) || bruto.length === 0) return { erro: "O carrinho está vazio." };
+export function validarItens(bruto, permitirVazio) {
+  if (!Array.isArray(bruto) || (bruto.length === 0 && !permitirVazio)) return { erro: "O carrinho está vazio." };
   if (bruto.length > 60) return { erro: "Há itens demais no pedido." };
   const mapa = new Map();
   for (const item of bruto) {

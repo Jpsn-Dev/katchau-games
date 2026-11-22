@@ -147,6 +147,42 @@
     toast("Você saiu da sua conta");
   });
 
+  /* ---------- editar nome e senha (somente com o banco de dados ativo) ---------- */
+  const detalhesPerfil = document.getElementById("conta-perfil");
+  const formPerfil = document.getElementById("form-perfil");
+  const formSenha = document.getElementById("form-senha");
+
+  configurarFormulario(formPerfil, async function (form) {
+    const resultado = await auth.atualizarNome(form.elements.nome.value);
+    if (!resultado.ok) return mostrarErro(form, resultado.erro, form.elements.nome);
+    mostrarErro(form, "");
+    toast.sucesso("Nome atualizado");
+  });
+
+  configurarFormulario(formSenha, async function (form) {
+    const atual = form.elements.atual;
+    const nova = form.elements.nova;
+    const confirmar = form.elements.confirmar;
+    const erroNova = validarSenha(nova.value);
+    if (!atual.value) return mostrarErro(form, "Informe sua senha atual.", atual);
+    if (erroNova) return mostrarErro(form, erroNova, nova);
+    if (nova.value !== confirmar.value) return mostrarErro(form, "As senhas não são iguais.", confirmar);
+    const resultado = await auth.alterarSenha(atual.value, nova.value);
+    if (!resultado.ok) {
+      atual.value = "";
+      return mostrarErro(form, resultado.erro, atual);
+    }
+    form.reset();
+    mostrarErro(form, "");
+    toast.sucesso("Senha alterada", { descricao: "As outras sessões desta conta foram encerradas." });
+  });
+
+  function mostrarPerfil(usuario) {
+    const ativo = !!usuario && auth.modo() === "servidor";
+    detalhesPerfil.hidden = !ativo;
+    if (ativo && document.activeElement !== formPerfil.elements.nome) formPerfil.elements.nome.value = usuario.nome;
+  }
+
   /* ---------- pedidos (somente quando o site está ligado ao banco de dados) ---------- */
   const secaoPedidos = document.getElementById("conta-pedidos");
   const listaPedidos = document.getElementById("lista-pedidos");
@@ -199,11 +235,12 @@
     });
   }
 
-  auth.assinar(function (usuario) { atualizar(); carregarPedidos(usuario); });
+  auth.assinar(function (usuario) { atualizar(); carregarPedidos(usuario); mostrarPerfil(usuario); });
   atualizar();
   auth.pronto.then(function () {
     ajustarTextos();
     carregarPedidos(auth.usuario());
+    mostrarPerfil(auth.usuario());
   });
   selecionarAba(window.location.hash === "#cadastro" ? "cadastro" : "entrar");
 })();

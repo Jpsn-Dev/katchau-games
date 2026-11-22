@@ -108,6 +108,30 @@ const PRODUTOS = [
   { id: 35, slug: "the-legend-of-zelda-breath-of-the-wild", name: "The Legend of Zelda: Breath of the Wild", category: "Jogos", platforms: ["Nintendo"], price: 249.9, oldPrice: 299.9, tag: "Nintendo", image: "zelda-breath-of-the-wild.webp", kind: "game" },
 ];
 
+/* ------------------------------------------------------------------
+ * Catálogo do banco de dados
+ * Com a API ativa, js/catalogo-servidor.js guarda uma cópia do catálogo do banco neste
+ * navegador. Se ela existir, é válida e tem menos de 7 dias, substitui a lista acima;
+ * caso contrário (arquivo local, sem API, cópia antiga ou suspeita) vale o catálogo estático.
+ * ------------------------------------------------------------------ */
+(function () {
+  try {
+    const copia = JSON.parse(window.localStorage.getItem("katchau-catalogo-v1") || "null");
+    if (!copia || !Array.isArray(copia.produtos) || !copia.produtos.length) return;
+    if (!(Date.now() - copia.em < 7 * 24 * 60 * 60 * 1000)) return;
+    const valido = copia.produtos.every(function (p) {
+      return p && Number.isInteger(p.id) && typeof p.slug === "string" && typeof p.name === "string" &&
+        CATEGORIAS.indexOf(p.category) !== -1 && Array.isArray(p.platforms) &&
+        p.platforms.every(function (x) { return PLATAFORMAS.indexOf(x) !== -1; }) &&
+        Number.isFinite(p.price) && Number.isFinite(p.oldPrice) && typeof p.image === "string" &&
+        Object.prototype.hasOwnProperty.call(IMAGENS, p.image) && typeof p.kind === "string" && typeof p.tag === "string";
+    });
+    if (valido) PRODUTOS.splice.apply(PRODUTOS, [0, PRODUTOS.length].concat(copia.produtos));
+  } catch (e) {
+    /* sem armazenamento ou cópia ilegível: mantém o catálogo estático */
+  }
+})();
+
 const IDS_DESTAQUE = [5, 1, 4, 19, 17, 10, 22, 24];
 const IDS_JOGOS_EM_DESTAQUE = [19, 17, 7, 10, 18, 35, 34, 8];
 const IDS_RELEVANCIA = [5, 1, 4, 19, 17, 10, 36, 3, 7, 22, 24, 2, 8, 18, 35, 34, 33, 16];
