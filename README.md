@@ -61,7 +61,7 @@ katchau-games/
 ├── worker/                 # Entrada do Worker da Cloudflare (rotas /api/*)
 ├── server/                 # Rotas, validação e segurança da API
 ├── wrangler.jsonc          # Configuração do deploy na Cloudflare
-├── db/                     # schema.sql e seed.sql (PostgreSQL)
+├── db/                     # schema.sql, seed.sql, exemplos.sql (dados de exemplo) e consultas.sql (SELECTs)
 ├── partials/               # Modelos do cabeçalho e do rodapé
 ├── scripts/                # Gerar seed e páginas, baixar imagens, verificar a API
 ├── tests/                  # Testes da API

@@ -61,7 +61,7 @@ Tabelas de apoio que não fazem parte do modelo conceitual: `sessao` (login), `c
 ### 1. Neon
 
 1. (Recomendado) No Neon, crie um **branch** do banco atual para testar sem mexer nos dados do seu colega. **Atenção:** o `seed.sql` grava os produtos com `id_produto` de 1 a 36 e, se já existirem produtos com esses números, os dados deles são **substituídos**.
-2. Abra o **SQL Editor** e execute, nesta ordem, o conteúdo de `db/schema.sql` e depois `db/seed.sql`. Ambos podem ser executados mais de uma vez.
+2. Abra o **SQL Editor** e execute, nesta ordem, o conteúdo de `db/schema.sql` e depois `db/seed.sql`. Ambos podem ser executados mais de uma vez. Para demonstrar o banco, execute também `db/exemplos.sql` (4 clientes fictícios, endereços e 3 pedidos) e depois `db/consultas.sql` (5 consultas SELECT). Não rode `exemplos.sql` no banco de produção se não quiser clientes de teste.
 3. Copie a **connection string** (Connection details → formato `postgresql://…`).
 
 O `schema.sql` cria o que falta e acrescenta as colunas que o site usa nas tabelas que já existem, sem apagar nada. Se aparecer erro sobre coluna obrigatória (`NOT NULL`) em `cliente`, `produto` ou outra tabela, significa que o seu colega criou uma coluna que o site não preenche: torne-a opcional (`ALTER TABLE tabela ALTER COLUMN coluna DROP NOT NULL;`) ou ajuste o código.

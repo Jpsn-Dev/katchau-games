@@ -1,3 +1,17 @@
+/*
+ * PROJETO DE EXTENSAO EM DESENVOLVIMENTO DE SOFTWARE - UNINOVE
+ * Empresa: KaTchau Games & Gear (loja virtual de consoles, jogos e perifericos)
+ * Programa: Cadastro e login de usuarios (console)
+ * Disciplina: Algoritmos e Praticas de Programacao
+ *
+ * Grupo:
+ *   ALUNO 1 - RA 000000000   (preencher)
+ *   ALUNO 2 - RA 000000000   (preencher)
+ *
+ * Repositorio: https://github.com/Jpsn-Dev/katchau-games
+ * Compilar: gcc main.c -o programa     Executar: ./programa
+ */
+
 #include <stdio.h>
 #include <string.h>
 
