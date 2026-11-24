@@ -5,8 +5,12 @@
  * Disciplina: Algoritmos e Praticas de Programacao
  *
  * Grupo:
- *   ALUNO 1 - RA 000000000   (preencher)
- *   ALUNO 2 - RA 000000000   (preencher)
+ *   Joao Pedro Souza Nunes - RA 925115612
+ *   Rhuan Machado Inocencio Raimundo - RA 925102998
+ *   Luis Felipe Santos Dos Anjos - RA 925116420
+ *   Eugenio Kafuma Antonio Nobrega - RA 925108741
+ *   Heitor Ribeiro Espindola - RA 925114780
+ *   Jhonatan Dourado Araujo - RA 926208072
  *
  * Repositorio: https://github.com/Jpsn-Dev/katchau-games
  * Compilar: gcc main.c -o programa     Executar: ./programa
